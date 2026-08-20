@@ -1,10 +1,10 @@
 export const Role = {
-  CUSTOMER_SERVICE: 'customer_service',
-  EMBARQUES: 'embarques',
-  ADUANAS: 'aduanas',
-  COORD_STOCK: 'coord_stock',
-  CHOFER: 'chofer',
-  CASETA: 'caseta',
+  CUSTOMER_SERVICE: 'Customer Service',
+  EMBARQUES: 'Embarques',
+  ADUANAS: 'Aduanas',
+  COORD_STOCK: 'Coordinador Stock',
+  CHOFER: 'Chofer',
+  CASETA: 'Caseta',
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -18,7 +18,6 @@ export const roleLabel: Record<Role, string> = {
   [Role.CASETA]: 'Caseta',
 }
 
-// Shape real que regresa tu api-negocio en /auth/me
 export interface UsuarioApi {
   id: number
   rol_id: number | null
