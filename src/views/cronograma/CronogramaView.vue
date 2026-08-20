@@ -14,9 +14,6 @@ const {
   archivo,
   subiendo,
   guardando,
-  guardadoOk,
-  errorModal,
-  errorPagina,
   hayFilasConError,
   puedeGuardar,
   cargarClientes,
@@ -31,7 +28,6 @@ onMounted(cargarClientes)
 
 function abrirModal() {
   elegirArchivo(null)
-  errorModal.value = null
   modalAbierto.value = true
 }
 
@@ -54,9 +50,6 @@ async function onSubir() {
         Editar archivo
       </BaseButton>
     </header>
-
-    <p v-if="errorPagina" class="banner banner--error">{{ errorPagina }}</p>
-    <p v-if="guardadoOk" class="banner banner--ok">Cronograma guardado correctamente.</p>
 
     <!-- Estado vacío -->
     <div v-if="!cronogramaCargado" class="card card--empty">
@@ -95,7 +88,6 @@ async function onSubir() {
       v-if="modalAbierto"
       :archivo="archivo"
       :subiendo="subiendo"
-      :error="errorModal"
       @elegir="elegirArchivo"
       @subir="onSubir"
       @close="modalAbierto = false"
