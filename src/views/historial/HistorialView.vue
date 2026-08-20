@@ -17,7 +17,6 @@ const {
   embarques,
   meta,
   cargando,
-  error,
   filtrados,
   indiceInicial,
   cargar,
@@ -69,7 +68,6 @@ function exportar() {
         @aplicar="aplicar"
       />
 
-      <p v-if="error" class="banner banner--error">{{ error }}</p>
 
       <EmbarquesTabla
         :embarques="filtrados"

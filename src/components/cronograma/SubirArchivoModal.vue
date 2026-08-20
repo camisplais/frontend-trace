@@ -9,7 +9,6 @@ import BaseButton from '@/components/ui/BaseButton.vue'
 defineProps<{
   archivo: File | null
   subiendo: boolean
-  error: string | null
 }>()
 
 const emit = defineEmits<{
@@ -45,8 +44,6 @@ function onChange(event: Event) {
     <div class="selected-file">
       {{ archivo?.name ?? 'Ningún archivo seleccionado' }}
     </div>
-
-    <p v-if="error" class="banner banner--error">{{ error }}</p>
 
     <template #footer>
       <BaseButton variant="secondary" @click="emit('close')">Cancelar</BaseButton>

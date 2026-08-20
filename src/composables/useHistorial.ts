@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { historialService } from '@/services/historial.service'
+import { alerta } from '@/services/alerta'
 import { ApiError } from '@/services/http'
 import type { Embarque, TipoEmbarque, PaginatedMeta } from '@/types/embarque'
 
@@ -20,11 +21,9 @@ export function useHistorial() {
   const embarques = ref<Embarque[]>([])
   const meta = ref<PaginatedMeta | null>(null)
   const cargando = ref(false)
-  const error = ref<string | null>(null)
 
   async function cargar(page: number) {
     cargando.value = true
-    error.value = null
     try {
       const res = await historialService.listar({
         tipo: tipo.value || undefined,
@@ -36,7 +35,8 @@ export function useHistorial() {
       embarques.value = res.data
       meta.value = res.meta
     } catch (e) {
-      error.value = e instanceof ApiError ? e.message : 'No se pudo cargar el historial.'
+      const msg = e instanceof ApiError ? e.message : 'No se pudo cargar el historial.'
+      await alerta.error('Error al cargar el historial', msg)
     } finally {
       cargando.value = false
     }
@@ -71,7 +71,6 @@ export function useHistorial() {
     embarques,
     meta,
     cargando,
-    error,
     filtrados,
     indiceInicial,
     cargar,

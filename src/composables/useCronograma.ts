@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { cronogramaService } from '@/services/cronograma.service'
 import { clientesService } from '@/services/clientes.service'
+import { alerta } from '@/services/alerta'
 import { ApiError } from '@/services/http'
 import type { Cliente, CronogramaFila, ConfirmarEmbarqueItem } from '@/types/embarque'
 
@@ -16,17 +17,16 @@ export function useCronograma() {
   const archivo = ref<File | null>(null)
   const subiendo = ref(false)
   const guardando = ref(false)
-  const guardadoOk = ref(false)
 
-  const errorModal = ref<string | null>(null)
-  const errorPagina = ref<string | null>(null)
 
   async function cargarClientes() {
     try {
       clientes.value = await clientesService.listar()
     } catch {
-      errorPagina.value =
-        'No se pudieron cargar los clientes. Revisa que el backend esté corriendo.'
+      await alerta.error(
+        'No se pudieron cargar los clientes',
+        'Revisa que el backend esté corriendo.',
+      )
     }
   }
 
@@ -37,7 +37,6 @@ export function useCronograma() {
   async function subir() {
     if (!archivo.value) return
     subiendo.value = true
-    errorModal.value = null
     try {
       const rows = await cronogramaService.subirPlan(archivo.value)
       filas.value = rows.map((row) => ({
@@ -47,10 +46,12 @@ export function useCronograma() {
         clienteId: null,
       }))
       cronogramaCargado.value = true
-      guardadoOk.value = false
       return true
     } catch (e) {
-      errorModal.value = e instanceof ApiError ? e.message : 'No se pudo procesar el archivo.'
+      await alerta.error(
+        'No se pudo procesar el archivo',
+        e instanceof ApiError ? e.message : undefined,
+      )
       return false
     } finally {
       subiendo.value = false
@@ -68,7 +69,6 @@ export function useCronograma() {
   async function guardar() {
     if (!puedeGuardar.value) return
     guardando.value = true
-    errorPagina.value = null
     try {
       const payload: ConfirmarEmbarqueItem[] = filasValidas.value.map((f) => ({
         cliente_id: f.clienteId as number,
@@ -80,9 +80,12 @@ export function useCronograma() {
         cantidad_piezas: f.datos!.cantidad_piezas,
       }))
       await cronogramaService.confirmar(payload)
-      guardadoOk.value = true
+      await alerta.exito('¡Cronograma guardado!', 'La información se guardó correctamente.')
     } catch (e) {
-      errorPagina.value = e instanceof ApiError ? e.message : 'No se pudo guardar el cronograma.'
+      await alerta.error(
+        'No se pudo guardar el cronograma',
+        e instanceof ApiError ? e.message : undefined,
+      )
     } finally {
       guardando.value = false
     }
@@ -95,9 +98,6 @@ export function useCronograma() {
     archivo,
     subiendo,
     guardando,
-    guardadoOk,
-    errorModal,
-    errorPagina,
     hayFilasConError,
     puedeGuardar,
     cargarClientes,
