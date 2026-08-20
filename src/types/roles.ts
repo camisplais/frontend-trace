@@ -1,6 +1,3 @@
-/**
- * Roles del sistema (Matriz de Roles y Funciones).
- */
 export const Role = {
   CUSTOMER_SERVICE: 'customer_service',
   EMBARQUES: 'embarques',
@@ -19,6 +16,30 @@ export const roleLabel: Record<Role, string> = {
   [Role.COORD_STOCK]: 'Coord. de Stock',
   [Role.CHOFER]: 'Chofer',
   [Role.CASETA]: 'Caseta',
+}
+
+// Shape real que regresa tu api-negocio en /auth/me
+export interface UsuarioApi {
+  id: number
+  rol_id: number | null
+  rol: { id: number; nombre: string } | null
+  empleado_id: number | null
+  empleado: {
+    id: number
+    no_empleado: string
+    nombre: string
+    apellido_paterno: string
+    apellido_materno: string
+    fecha_nacimiento: string
+    fecha_ingreso: string
+    imagen: string | null
+    departamento: unknown
+    puesto: unknown
+    estado: unknown
+  } | null
+  username: string
+  celular: string | null
+  estado: boolean
 }
 
 export interface CurrentUser {
