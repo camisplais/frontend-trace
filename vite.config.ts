@@ -15,4 +15,10 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    // El backend habilita CORS solo para http://localhost:5000,
+    // por eso fijamos el dev server en ese puerto.
+    port: 5000,
+    strictPort: true,
+  },
 })

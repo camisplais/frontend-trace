@@ -1,0 +1,71 @@
+/**
+ * Design tokens — TRACE
+ * Fuente: pantallas de Figma (Customer Service).
+ * Cambiar aqui cualquier color/medida se refleja en toda la app.
+ */
+:root {
+  /* Marca */
+  --color-primary: #f57c1f; /* naranja TRACE (botones, activo) */
+  --color-primary-hover: #e06e15;
+  --color-primary-soft: #fff3e9; /* fondos suaves naranja */
+
+  /* Sidebar (oscuro) */
+  --color-sidebar-bg: #1a1a1a;
+  --color-sidebar-text: #b8b8b8;
+  --color-sidebar-text-strong: #ffffff;
+  --color-sidebar-active-bg: var(--color-primary);
+  --color-sidebar-active-text: #ffffff;
+
+  /* Superficie / contenido */
+  --color-bg: #f4f5f7; /* fondo general del area de contenido */
+  --color-surface: #ffffff; /* tarjetas, tablas, modales */
+  --color-border: #e5e7eb;
+  --color-border-strong: #d1d5db;
+
+  /* Texto */
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-text-faint: #9ca3af;
+
+  /* Estados / badges */
+  --color-regular: #6b7280; /* punto gris "Regular" */
+  --color-expedito-bg: #fff3e9;
+  --color-expedito-text: #f57c1f; /* "Expeditado" */
+  --color-danger: #dc2626;
+  --color-success: #16a34a;
+  --color-info-bg: #e8f0fe; /* chips EM-00x */
+  --color-info-text: #2563eb;
+
+  /* Tipografia */
+  --font-sans:
+    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.5rem;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* Espaciado (escala de 4px) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+
+  /* Radios y sombras */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* Layout */
+  --sidebar-width: 232px;
+}
