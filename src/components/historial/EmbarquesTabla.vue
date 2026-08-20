@@ -2,6 +2,7 @@
 import TipoBadge from '@/components/ui/TipoBadge.vue'
 import PlanChip from '@/components/ui/PlanChip.vue'
 import type { Embarque } from '@/types/embarque'
+import { formatearFecha } from '@/utils/fecha'
 
 /**
  * Tabla de embarques del Historial. Solo presenta datos y emite `ver`
@@ -24,6 +25,7 @@ const emit = defineEmits<{ ver: [embarque: Embarque] }>()
         <th>#</th>
         <th>Cliente</th>
         <th>Plan embarque</th>
+        <th>Fecha</th>
         <th>Tarimas</th>
         <th>Pzas</th>
         <th>Tipo</th>
@@ -35,6 +37,7 @@ const emit = defineEmits<{ ver: [embarque: Embarque] }>()
         <td>{{ indiceInicial + i }}</td>
         <td>{{ e.cliente.nombre }}</td>
         <td><PlanChip :label="e.plan_embarque" /></td>
+        <td>{{ formatearFecha(e.fecha) }}</td>
         <td>{{ e.tarima }}</td>
         <td>{{ e.cantidad_piezas.toLocaleString() }}</td>
         <td><TipoBadge :tipo="e.tipo" /></td>
@@ -48,7 +51,7 @@ const emit = defineEmits<{ ver: [embarque: Embarque] }>()
         </td>
       </tr>
       <tr v-if="!cargando && embarques.length === 0">
-        <td colspan="7" class="table__empty">No hay embarques para mostrar.</td>
+        <td colspan="8" class="table__empty">No hay embarques para mostrar.</td>
       </tr>
     </tbody>
   </table>

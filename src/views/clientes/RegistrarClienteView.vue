@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import PruebasChecklist from '@/components/clientes/PruebasChecklist.vue'
 import { useRegistrarCliente } from '@/composables/useRegistrarCliente'
+import { alerta } from '@/services/alerta'
 import { tiposCliente, tipoClienteLabel } from '@/types/cliente'
 
 const router = useRouter()
@@ -13,7 +14,6 @@ const {
   tipo,
   documentos,
   guardando,
-  error,
   pruebasNecesarias,
   puedeRegistrar,
   cargarDocumentos,
@@ -24,7 +24,10 @@ onMounted(cargarDocumentos)
 
 async function onRegistrar() {
   const ok = await registrar()
-  if (ok) router.push({ name: 'clientes' })
+  if (ok) {
+    await alerta.exito('¡Registro guardado!', 'La información se guardó correctamente.')
+    router.push({ name: 'clientes' })
+  }
 }
 </script>
 
@@ -56,7 +59,6 @@ async function onRegistrar() {
             </select>
           </label>
 
-          <p v-if="error" class="banner banner--error">{{ error }}</p>
 
           <div class="acciones">
             <BaseButton variant="primary" type="submit" :disabled="!puedeRegistrar || guardando">
