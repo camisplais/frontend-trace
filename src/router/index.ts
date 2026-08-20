@@ -38,6 +38,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/historial/HistorialView.vue'),
         meta: { title: 'Historial', roles: [Role.CUSTOMER_SERVICE] },
       },
+      {
+        path: 'clientes',
+        name: 'clientes',
+        component: () => import('@/views/clientes/ClientesView.vue'),
+        meta: { title: 'Clientes', roles: [Role.CUSTOMER_SERVICE] },
+      },
+      {
+        path: 'clientes/registrar',
+        name: 'clientes-registrar',
+        component: () => import('@/views/clientes/RegistrarClienteView.vue'),
+        meta: { title: 'Registrar Cliente', roles: [Role.CUSTOMER_SERVICE] },
+      },
     ],
   },
   {
