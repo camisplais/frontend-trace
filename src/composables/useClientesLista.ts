@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { clientesService } from '@/services/clientes.service'
 import { ApiError } from '@/services/http'
+import { alerta } from '@/services/alerta'
 import type { Cliente, ClientesMeta, TipoCliente } from '@/types/cliente'
 
 const PER_PAGE = 5
@@ -33,7 +34,10 @@ export function useClientesLista() {
       clientes.value = res.data
       meta.value = res.meta
     } catch (e) {
-      error.value = e instanceof ApiError ? e.message : 'No se pudieron cargar los clientes.'
+      await alerta.error(
+        'No se pudieron cargar los clientes',
+        e instanceof ApiError ? e.message : undefined,
+      )
     } finally {
       cargando.value = false
     }

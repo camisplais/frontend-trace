@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { clientesService } from '@/services/clientes.service'
 import { documentosService } from '@/services/documentos.service'
 import { ApiError } from '@/services/http'
+import { alerta } from '@/services/alerta'
 import type { Documento, TipoCliente } from '@/types/cliente'
 
 /**
@@ -18,15 +19,15 @@ export function useRegistrarCliente() {
 
   const documentos = ref<Documento[]>([])
   const guardando = ref(false)
-  const error = ref<string | null>(null)
-  const exito = ref(false)
 
   async function cargarDocumentos() {
     try {
       documentos.value = await documentosService.listar()
     } catch (e) {
-      error.value =
-        e instanceof ApiError ? e.message : 'No se pudo cargar el catálogo de pruebas.'
+      await alerta.error(
+        'No se pudo cargar el catálogo de pruebas',
+        e instanceof ApiError ? e.message : undefined,
+      )
     }
   }
 
@@ -46,18 +47,18 @@ export function useRegistrarCliente() {
   async function registrar(): Promise<boolean> {
     if (!puedeRegistrar.value || tipo.value === '') return false
     guardando.value = true
-    error.value = null
-    exito.value = false
     try {
       await clientesService.crear({
         nombre: nombre.value.trim(),
         ubicacion: ubicacion.value.trim(),
         tipo: tipo.value,
       })
-      exito.value = true
       return true
     } catch (e) {
-      error.value = e instanceof ApiError ? e.message : 'No se pudo registrar el cliente.'
+      await alerta.error(
+        'No se pudo registrar',
+        e instanceof ApiError ? e.message : undefined,
+      )
       return false
     } finally {
       guardando.value = false
@@ -70,8 +71,6 @@ export function useRegistrarCliente() {
     tipo,
     documentos,
     guardando,
-    error,
-    exito,
     pruebasNecesarias,
     puedeRegistrar,
     cargarDocumentos,

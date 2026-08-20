@@ -2,12 +2,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import BasePagination from '@/components/ui/BasePagination.vue'
-import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import ClientesFiltros from '@/components/clientes/ClientesFiltros.vue'
 import ClientesTabla from '@/components/clientes/ClientesTabla.vue'
 import EditarClienteModal from '@/components/clientes/EditarClienteModal.vue'
 import { useClientesLista } from '@/composables/useClientesLista'
 import { clientesService } from '@/services/clientes.service'
+import { alerta } from '@/services/alerta'
 import { ApiError } from '@/services/http'
 import type { Cliente } from '@/types/cliente'
 
@@ -27,7 +27,6 @@ const {
 
 const enEdicion = ref<Cliente | null>(null)
 const guardandoEdicion = ref(false)
-const aEliminar = ref<Cliente | null>(null)
 
 onMounted(() => cargar(1))
 
@@ -43,17 +42,28 @@ async function guardarEdicion(nuevoNombre: string) {
     await clientesService.actualizar(enEdicion.value.id, { nombre: nuevoNombre })
     enEdicion.value = null
     await cargar(meta.value?.page ?? 1)
+    await alerta.exito('¡Cambios guardados!', 'La información se guardó correctamente.')
   } catch (e) {
-    error.value = e instanceof ApiError ? e.message : 'No se pudo actualizar el cliente.'
+    await alerta.error(
+      'No se pudo actualizar',
+      e instanceof ApiError ? e.message : undefined,
+    )
   } finally {
     guardandoEdicion.value = false
   }
 }
 
-async function confirmarEliminar() {
-  if (!aEliminar.value) return
-  await eliminar(aEliminar.value.id)
-  aEliminar.value = null
+async function pedirEliminar(cliente: Cliente) {
+  const ok = await alerta.confirmar('¿Está seguro de eliminar este registro?', {
+    confirmText: 'OK',
+  })
+  if (!ok) return
+  await eliminar(cliente.id)
+  if (error.value) {
+    await alerta.error('No se pudo eliminar', error.value)
+  } else {
+    await alerta.exito('Registro eliminado', 'El cliente se eliminó correctamente.')
+  }
 }
 </script>
 
@@ -76,14 +86,13 @@ async function confirmarEliminar() {
         @aplicar="aplicar"
       />
 
-      <p v-if="error" class="banner banner--error">{{ error }}</p>
 
       <ClientesTabla
         :clientes="clientes"
         :indice-inicial="indiceInicial"
         :cargando="cargando"
         @editar="enEdicion = $event"
-        @eliminar="aEliminar = $event"
+        @eliminar="pedirEliminar"
       />
 
       <footer v-if="meta" class="table-footer">
@@ -102,13 +111,6 @@ async function confirmarEliminar() {
       @close="enEdicion = null"
     />
 
-    <ConfirmDialog
-      v-if="aEliminar"
-      title="Eliminar cliente"
-      :message="`¿Seguro que deseas eliminar a ${aEliminar.nombre}? Esta acción no se puede deshacer.`"
-      @confirm="confirmarEliminar"
-      @close="aEliminar = null"
-    />
   </section>
 </template>
 
