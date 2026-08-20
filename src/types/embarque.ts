@@ -87,6 +87,7 @@ export interface EmbarqueCliente {
 export interface Embarque {
   id: number
   cliente: EmbarqueCliente
+  empleado?: EmpleadoResumen
   plan_embarque: string
   fecha: string
   hora: string
@@ -108,4 +109,9 @@ export interface HistorialFiltros {
 export interface EmbarquesRespuesta {
   data: Embarque[]
   meta: PaginatedMeta
+}
+
+export interface EmpleadoResumen {
+  id: number
+  nombre: string
 }

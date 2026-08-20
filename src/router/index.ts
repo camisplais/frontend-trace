@@ -50,6 +50,19 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/clientes/RegistrarClienteView.vue'),
         meta: { title: 'Registrar Cliente', roles: [Role.CUSTOMER_SERVICE] },
       },
+      {
+        path: 'horario',
+        name: 'horario',
+        component: () => import('@/views/horario/HorarioView.vue'),
+        meta: { title: 'Horario', roles: [Role.EMBARQUES] },
+      },
+      {
+        path: 'viajes',
+        name: 'viajes',
+        component: () => import('@/views/viajes/ViajesView.vue'),
+        meta: { title: 'Viajes', roles: [Role.EMBARQUES] },
+      },
+
     ],
   },
   {
