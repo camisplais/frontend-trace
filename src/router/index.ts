@@ -22,7 +22,7 @@ const routes: RouteRecordRaw[] = [
             case Role.ADUANAS:
               return { name: 'horario' }
             case Role.COORD_STOCK:
-              return { name: 'horario' }
+              return { name: 'transportes' }
 
             default:
               return { name: 'no-autorizado' }
@@ -52,6 +52,18 @@ const routes: RouteRecordRaw[] = [
         name: 'clientes-registrar',
         component: () => import('@/views/clientes/RegistrarClienteView.vue'),
         meta: { title: 'Registrar Cliente', roles: [Role.CUSTOMER_SERVICE] },
+      },
+      {
+        path: 'transportes',
+        name: 'transportes',
+        component: () => import('@/views/transportes/TransportesView.vue'),
+        meta: { title: 'Transportes', roles: [Role.COORD_STOCK] },
+      },
+      {
+        path: 'transportes/registrar',
+        name: 'transportes-registrar',
+        component: () => import('@/views/transportes/RegistrarTransporteView.vue'),
+        meta: { title: 'Registrar Transporte', roles: [Role.COORD_STOCK] },
       },
       {
         path: 'horario',
