@@ -1,11 +1,13 @@
 <script setup lang="ts">
-defineProps<{ title: string }>()
+withDefaults(defineProps<{ title: string; size?: 'sm' | 'lg' }>(), {
+  size: 'sm',
+})
 const emit = defineEmits<{ close: [] }>()
 </script>
 
 <template>
   <div class="modal-overlay" @click.self="emit('close')">
-    <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal" :class="`modal--${size}`" role="dialog" aria-modal="true">
       <header class="modal__header">
         <h2 class="modal__title">{{ title }}</h2>
         <button class="modal__close" type="button" aria-label="Cerrar" @click="emit('close')">
