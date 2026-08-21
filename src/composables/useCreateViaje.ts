@@ -26,12 +26,12 @@ export function useCrearViaje() {
   // Muestra el error con SweetAlert, usando el code+mensaje real del backend
   // cuando existe, o un mensaje genérico si fue un fallo inesperado (red caída, etc.)
   function mostrarError(e: unknown, tituloGenerico: string) {
-    if (e instanceof ApiError) {
-      alerta.error(e.code, e.message)
-    } else {
-      alerta.error(tituloGenerico, 'Ocurrió un error inesperado. Intenta de nuevo.')
-    }
+  if (e instanceof ApiError) {
+    alerta.error(tituloGenerico, `[${e.code}] ${e.message}`)
+  } else {
+    alerta.error(tituloGenerico, 'Ocurrió un error inesperado. Intenta de nuevo.')
   }
+}
 
   async function cargarOpciones() {
     cargandoOpciones.value = true
