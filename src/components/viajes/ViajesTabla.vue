@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { Viaje, EmpleadoDetalle } from '@/types/viajes'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 defineProps<{
   viajes: Viaje[]
@@ -37,12 +40,12 @@ function formatearHora(isoDatetime: string | null | undefined): string {
         <td>{{ formatearHora(v.seguimiento?.salida) }}</td>
         <td>{{ formatearHora(v.seguimiento?.entrada) }}</td>
         <td class="acciones">
-          <button class="icono-btn" aria-label="Agregar embarque">
+          <button class="icono-btn" aria-label="Agregar embarque" @click="router.push({ name: 'agregar-embarque', params: { id: v.id } })">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 5v14M5 12h14" />
             </svg>
           </button>
-          <button class="icono-btn" aria-label="Ver detalle">
+          <button class="icono-btn" aria-label="Ver detalle" @click="router.push({ name: 'viaje-detalle', params: { id: v.id } })">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
               <circle cx="12" cy="12" r="3" />

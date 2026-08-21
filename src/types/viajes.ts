@@ -1,3 +1,5 @@
+import type { Embarque } from "./embarque"
+
 export interface EmpleadoDetalle {
   id: number
   no_empleado: number
@@ -33,7 +35,7 @@ export interface ViajeEmbarqueItem {
   id: number
   viaje_id: number
   embarque_id: number | null
-  embarque: ViajeEmbarqueDatos | null
+  embarque: Embarque | null
 }
 
 export interface SeguimientoResumen {
@@ -51,7 +53,7 @@ export interface Viaje {
   transporte: TransporteResumen | null
   seguimiento: SeguimientoResumen | null
   viaje_embarques: ViajeEmbarqueItem[]
-  embarques: ViajeEmbarqueDatos[]
+  embarques: Embarque[]
 }
 
 export interface ViajesFiltros {
