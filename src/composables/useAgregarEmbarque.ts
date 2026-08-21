@@ -21,9 +21,12 @@ export function useAgregarEmbarque(viajeId: number) {
   const enviando = ref(false)
 
   function mostrarError(e: unknown, tituloGenerico: string) {
-    if (e instanceof ApiError) alerta.error(e.code, e.message)
-    else alerta.error(tituloGenerico, 'Ocurrió un error inesperado. Intenta de nuevo.')
+  if (e instanceof ApiError) {
+    alerta.error(tituloGenerico, `[${e.code}] ${e.message}`)
+  } else {
+    alerta.error(tituloGenerico, 'Ocurrió un error inesperado. Intenta de nuevo.')
   }
+}
 
   async function cargar() {
     cargando.value = true

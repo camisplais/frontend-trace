@@ -104,6 +104,7 @@ export interface Embarque {
   tarima: number
   cantidad_piezas: number
   estado: string
+  viaje_id: number | null
 }
 
 /** Filtros de la pantalla de Historial. */

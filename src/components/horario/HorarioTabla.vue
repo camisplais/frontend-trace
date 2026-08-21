@@ -2,6 +2,8 @@
 import TipoBadge from '@/components/ui/TipoBadge.vue'
 import PlanChip from '@/components/ui/PlanChip.vue'
 import type { Embarque } from '@/types/embarque'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 defineProps<{
   embarques: Embarque[]
@@ -22,6 +24,7 @@ defineProps<{
         <th>Tarimas</th>
         <th>Piezas</th>
         <th>Tipo</th>
+        <th>En viaje</th>
       </tr>
     </thead>
     <tbody>
@@ -35,10 +38,25 @@ defineProps<{
         <td>{{ e.tarima }}</td>
         <td>{{ e.cantidad_piezas }}</td>
         <td><TipoBadge :tipo="e.tipo" /></td>
+        <td>
+          <button
+            v-if="e.viaje_id"
+            class="estado-viaje estado-viaje--link"
+            @click="router.push({ name: 'viaje-detalle', params: { id: e.viaje_id } })"
+          >
+            <span class="estado-viaje__punto estado-viaje__punto--si"></span>
+            Viaje #{{ e.viaje_id }}
+          </button>
+          <span v-else class="estado-viaje">
+            <span class="estado-viaje__punto"></span>
+            Sin viaje
+          </span>
+        </td>
       </tr>
       <tr v-if="!cargando && embarques.length === 0">
         <td colspan="9" class="table__empty">No hay embarques para hoy.</td>
       </tr>
+
     </tbody>
   </table>
 </template>
@@ -61,4 +79,38 @@ defineProps<{
 }
 .table tbody tr:last-child td { border-bottom: none; }
 .table__empty { text-align: center; color: var(--color-text-muted); padding: var(--space-6); }
+
+.estado-viaje {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text);
+}
+
+.estado-viaje__punto {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-text-faint);
+}
+
+.estado-viaje__punto--si {
+  background-color: var(--color-success);
+}
+
+.estado-viaje--link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.estado-viaje--link:hover {
+  text-decoration: underline;
+}
+
 </style>
