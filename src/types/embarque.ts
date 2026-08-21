@@ -87,7 +87,16 @@ export interface EmbarqueCliente {
 export interface Embarque {
   id: number
   cliente: EmbarqueCliente
-  empleado?: EmpleadoResumen
+  empleado?: {
+    id: number
+    no_empleado: number
+    nombre: string
+    apellido_paterno: string
+    apellido_materno: string
+    departamento: string
+    puesto: string
+    estado: string
+  }
   plan_embarque: string
   fecha: string
   hora: string

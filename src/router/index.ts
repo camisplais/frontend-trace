@@ -84,6 +84,18 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Crear viaje', roles: [Role.EMBARQUES] },
       },
       {
+        path: 'viajes/:id',
+        name: 'viaje-detalle',
+        component: () => import('@/views/viajes/ViajeDetalleView.vue'),
+        meta: { title: 'Detalle del viaje', roles: [Role.EMBARQUES] },
+      },
+      {
+        path: 'viajes/:id/embarques',
+        name: 'agregar-embarque',
+        component: () => import('@/views/viajes/AgregarEmbarqueView.vue'),
+        meta: { title: 'Agregar embarque', roles: [Role.EMBARQUES] },
+      },
+      {
         path: 'pendientes',
         name: 'pendientes',
         component: () => import('@/views/horario/HorarioView.vue'), // temporal, solo para no romper el link
