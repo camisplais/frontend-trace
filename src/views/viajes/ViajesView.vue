@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useViajes } from '@/composables/useViajes'
 import ViajesTabla from '@/components/viajes/ViajesTabla.vue'
 import BasePagination from '@/components/ui/BasePagination.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
 
+const router = useRouter()
 const { viajes, page, totalPages, cargando, error, cargar, irAPagina } = useViajes()
 
 onMounted(cargar)
@@ -21,7 +23,7 @@ const hoyLegible = new Date().toLocaleDateString('es-MX', { day: '2-digit', mont
     <section class="viajes__card">
       <div class="viajes__toolbar">
         <h2>Viajes registrados — {{ hoyLegible }}</h2>
-        <BaseButton>+ Crear viaje</BaseButton>
+        <BaseButton @click="router.push({ name: 'crear-viaje' })">+ Crear viaje</BaseButton>
       </div>
 
       <p v-if="error" class="viajes__error">{{ error }}</p>

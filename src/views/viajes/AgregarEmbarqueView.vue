@@ -1,23 +1,21 @@
 <script setup lang="ts">
-import { onMounted, reactive, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCrearViaje } from '@/composables/useCreateViaje'
+import { reactive, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAgregarEmbarque } from '@/composables/useAgregarEmbarque'
 import BaseButton from '@/components/ui/BaseButton.vue'
 
+const route = useRoute()
 const router = useRouter()
+const viajeId = Number(route.params.id)
+
 const {
-  transportes, choferes, embarques,
-  embarqueId, transporteId, choferId, hora,
+  viaje, embarques, embarqueId,
   documentos, archivosPorDoc, subidoPorDoc,
-  cargandoOpciones, cargandoDocs, enviando,
-  cargarOpciones, elegirArchivo, subirDocumento, generarViaje,
-} = useCrearViaje()
+  cargando, cargandoDocs, enviando,
+  elegirArchivo, subirDocumento, agregar,
+} = useAgregarEmbarque(viajeId)
 
-onMounted(cargarOpciones)
-
-// Qué documentos decidió incluir el usuario (checkbox). Por default, todos
-// los que regresa el backend vienen marcados porque son "requeridos" para
-// este cliente — el usuario puede desmarcar los que no aplican para este viaje.
+// Qué documentos decidió incluir el usuario (checkbox) — igual que en Crear Viaje
 const seleccionados = reactive<Record<number, boolean>>({})
 
 watch(documentos, (docs) => {
@@ -26,18 +24,8 @@ watch(documentos, (docs) => {
   }
 })
 
-watch(embarqueId, (id) => {
-  const seleccionado = embarques.value.find((e) => e.id === id)
-  if (seleccionado?.hora) {
-    // El backend manda "14:10:00", pero <input type="time"> espera "HH:mm"
-    hora.value = seleccionado.hora.slice(0, 5)
-  } else {
-    hora.value = ''
-  }
-})
-
 async function onSubmit() {
-  const ok = await generarViaje()
+  const ok = await agregar()
   if (ok) router.push({ name: 'viajes' })
 }
 
@@ -46,7 +34,6 @@ function onFileChange(docId: number, event: Event) {
   elegirArchivo(docId, input.files?.[0] ?? null)
 }
 
-// "Deshacer" un archivo ya subido, para volver a mostrar el área de carga
 function quitarArchivo(docId: number) {
   subidoPorDoc.value[docId] = false
   archivosPorDoc.value[docId] = null
@@ -54,48 +41,40 @@ function quitarArchivo(docId: number) {
 </script>
 
 <template>
-  <div class="crear-viaje">
+  <div class="agregar-embarque">
     <button class="volver" type="button" @click="router.push({ name: 'viajes' })">
       ← Volver a Viajes
     </button>
 
-    <section class="card">
-      <h2>Información del viaje</h2>
-      <p class="subtitulo">Completa los datos del transporte, chofer y documentos de entrega.</p>
+    <p v-if="cargando">Cargando…</p>
 
-      <div class="grid">
-        <div class="campo">
-          <label>Embarque <span class="requerido">Requerido</span></label>
-          <select v-model.number="embarqueId" :disabled="cargandoOpciones">
-            <option :value="null" disabled>Seleccionar embarque</option>
-            <option v-for="e in embarques" :key="e.id" :value="e.id">
-              {{ e.plan_embarque }} — {{ e.cliente.nombre }}
-            </option>
-          </select>
-        </div>
+    <section v-else class="card">
+      <h2>Agregar embarque</h2>
+      <p class="subtitulo">Selecciona el embarque y adjunta sus documentos de entrega.</p>
 
-        <div class="campo">
-          <label>Transporte <span class="requerido">Requerido</span></label>
-          <select v-model.number="transporteId" :disabled="cargandoOpciones">
-            <option :value="null" disabled>Seleccionar transporte</option>
-            <option v-for="t in transportes" :key="t.id" :value="t.id">{{ t.placas }}</option>
-          </select>
+      <div class="resumen">
+        <div class="resumen__item">
+          <span class="resumen__label">Transporte</span>
+          <span class="resumen__valor">
+            {{ viaje?.transporte?.marca }} {{ viaje?.transporte?.placas }}
+          </span>
         </div>
+        <div class="resumen__item">
+          <span class="resumen__label">Chofer</span>
+          <span class="resumen__valor">
+            {{ viaje?.empleado_chofer?.nombre }} {{ viaje?.empleado_chofer?.apellido_paterno }}
+          </span>
+        </div>
+      </div>
 
-        <div class="campo">
-          <label>Chofer <span class="requerido">Requerido</span></label>
-          <select v-model.number="choferId" :disabled="cargandoOpciones">
-            <option :value="null" disabled>Seleccionar chofer</option>
-            <option v-for="c in choferes" :key="c.id" :value="c.id">
-              {{ c.nombre }} {{ c.apellido_paterno }}
-            </option>
-          </select>
-        </div>
-
-        <div class="campo">
-          <label>Hora de embarque</label>
-          <input v-model="hora" type="time" />
-        </div>
+      <div class="campo campo--full">
+        <label>Embarque <span class="requerido">Requerido</span></label>
+        <select v-model.number="embarqueId">
+          <option :value="null" disabled>Seleccionar embarque</option>
+          <option v-for="e in embarques" :key="e.id" :value="e.id">
+            {{ e.plan_embarque }} — {{ e.cliente.nombre }}
+          </option>
+        </select>
       </div>
 
       <div v-if="embarqueId" class="documentos">
@@ -113,13 +92,11 @@ function quitarArchivo(docId: number) {
           </label>
 
           <div v-if="seleccionados[doc.doc_cliente_id]">
-            <!-- Ya se subió: fila verde con palomita y opción de quitar -->
             <div v-if="subidoPorDoc[doc.doc_cliente_id]" class="doc-subido">
               <span class="doc-subido__icono">✓</span>
               <span class="doc-subido__nombre">{{ archivosPorDoc[doc.doc_cliente_id]?.name }}</span>
               <button type="button" class="doc-subido__quitar" @click="quitarArchivo(doc.doc_cliente_id)">×</button>
             </div>
-            <!-- Aún no se sube: input de archivo + botón Subir -->
             <div v-else class="doc-upload">
               <label class="file-picker">
                 <input type="file" class="file-picker__input" @change="onFileChange(doc.doc_cliente_id, $event)" />
@@ -137,7 +114,7 @@ function quitarArchivo(docId: number) {
       <div class="acciones">
         <BaseButton variant="secondary" @click="router.push({ name: 'viajes' })">Cancelar</BaseButton>
         <BaseButton :disabled="enviando" @click="onSubmit">
-          {{ enviando ? 'Generando…' : '→ Generar viaje' }}
+          {{ enviando ? 'Agregando…' : '→ Agregar embarque' }}
         </BaseButton>
       </div>
     </section>
@@ -145,7 +122,7 @@ function quitarArchivo(docId: number) {
 </template>
 
 <style scoped>
-.crear-viaje {
+.agregar-embarque {
   max-width: 900px;
   margin: 0 auto;
 }
@@ -180,20 +157,40 @@ function quitarArchivo(docId: number) {
   margin-bottom: var(--space-5);
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4) var(--space-6);
+.resumen {
+  display: flex;
+  gap: var(--space-6);
+  background-color: var(--color-bg);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
   margin-bottom: var(--space-5);
 }
 
-.campo {
+.resumen__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.resumen__label {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.resumen__valor {
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+}
+
+.campo--full {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  margin-bottom: var(--space-5);
 }
 
-.campo label {
+.campo--full label {
   font-size: var(--fs-xs);
   font-weight: var(--fw-semibold);
   color: var(--color-text);
@@ -206,8 +203,7 @@ function quitarArchivo(docId: number) {
   margin-left: var(--space-1);
 }
 
-.campo select,
-.campo input {
+.campo--full select {
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
@@ -216,8 +212,7 @@ function quitarArchivo(docId: number) {
   background-color: var(--color-surface);
 }
 
-.campo select:focus,
-.campo input:focus {
+.campo--full select:focus {
   outline: none;
   border-color: var(--color-primary);
 }
@@ -262,7 +257,6 @@ function quitarArchivo(docId: number) {
   cursor: pointer;
 }
 
-/* Área de subida: caja punteada, igual al diseño de Figma */
 .doc-upload {
   display: flex;
   align-items: center;
@@ -302,7 +296,6 @@ function quitarArchivo(docId: number) {
   white-space: nowrap;
 }
 
-/* Fila de "ya subido": verde con palomita */
 .doc-subido {
   display: flex;
   align-items: center;
@@ -347,14 +340,5 @@ function quitarArchivo(docId: number) {
   gap: var(--space-3);
   border-top: 1px solid var(--color-border);
   padding-top: var(--space-5);
-}
-
-.error {
-  color: var(--color-danger);
-  background-color: var(--color-expedito-bg);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-sm);
-  font-size: var(--fs-sm);
-  margin-bottom: var(--space-4);
 }
 </style>
