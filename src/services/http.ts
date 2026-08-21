@@ -66,6 +66,7 @@ async function request<T>(
     headers,
     body: payload,
     signal,
+    credentials: 'include',
   })
 
   if (res.status === 204) {

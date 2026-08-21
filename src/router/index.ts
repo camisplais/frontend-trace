@@ -18,8 +18,11 @@ const routes: RouteRecordRaw[] = [
             case Role.CUSTOMER_SERVICE:
               return { name: 'cronograma' }
             case Role.EMBARQUES:
+              return { name: 'horario' }
             case Role.ADUANAS:
+              return { name: 'horario' }
             case Role.COORD_STOCK:
+              return { name: 'horario' }
 
             default:
               return { name: 'no-autorizado' }
@@ -61,6 +64,18 @@ const routes: RouteRecordRaw[] = [
         name: 'viajes',
         component: () => import('@/views/viajes/ViajesView.vue'),
         meta: { title: 'Viajes', roles: [Role.EMBARQUES] },
+      },
+      {
+        path: 'viajes/crear',
+        name: 'crear-viaje',
+        component: () => import('@/views/viajes/CrearViajeView.vue'),
+        meta: { title: 'Crear viaje', roles: [Role.EMBARQUES] },
+      },
+      {
+        path: 'pendientes',
+        name: 'pendientes',
+        component: () => import('@/views/horario/HorarioView.vue'), // temporal, solo para no romper el link
+        meta: { title: 'Pendientes', roles: [Role.EMBARQUES] },
       },
 
     ],

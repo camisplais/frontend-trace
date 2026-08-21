@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { roleLabel } from '@/types/roles'
+import { roleLabel, Role } from '@/types/roles'
 import SidebarLink from './SidebarLink.vue'
 
 const auth = useAuthStore()
@@ -20,9 +20,50 @@ const iniciales = computed(() => {
 
 function cerrarSesion() {
   auth.logout()
-  // Cuando exista la vista de login: router.push({ name: 'login' })
   router.push('/')
 }
+
+// Definición de íconos reutilizables (evita repetir el mismo <svg> varias veces)
+const iconos = {
+  calendario: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>',
+  historial: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v5h5" /><path d="M3.05 13A9 9 0 106 5.3L3 8" /><path d="M12 7v5l4 2" /></svg>',
+  clientes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>',
+  viajes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h13l4 4v6h-4M3 7v10h4M9 17a2 2 0 104 0 2 2 0 00-4 0zM17 17a2 2 0 104 0 2 2 0 00-4 0zM3 7l2-4h9l2 4" /></svg>',
+  alerta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>',
+}
+
+interface NavLink {
+  to: string
+  label: string
+  icon: string
+}
+
+// Un solo lugar para definir qué ve cada rol. Agregar un rol nuevo = agregar una línea aquí.
+const navPorRol: Record<Role, NavLink[]> = {
+  [Role.CUSTOMER_SERVICE]: [
+    { to: 'cronograma', label: 'Cronograma', icon: iconos.calendario },
+    { to: 'historial', label: 'Historial', icon: iconos.historial },
+    { to: 'clientes', label: 'Clientes', icon: iconos.clientes },
+  ],
+  [Role.EMBARQUES]: [
+    { to: 'horario', label: 'Horario', icon: iconos.calendario },
+    { to: 'viajes', label: 'Viajes', icon: iconos.viajes },
+    { to: 'pendientes', label: 'pendientes', icon: iconos.alerta },
+  ],
+  [Role.ADUANAS]: [
+    // TODO: agregar cuando existan las vistas de Aduanas
+  ],
+  [Role.COORD_STOCK]: [
+    // TODO: agregar cuando existan las vistas de Coordinador de Stock
+  ],
+  [Role.CHOFER]: [],
+  [Role.CASETA]: [],
+}
+
+const linksDelRol = computed<NavLink[]>(() => {
+  if (!auth.user) return []
+  return navPorRol[auth.user.role] ?? []
+})
 </script>
 
 <template>
@@ -40,32 +81,9 @@ function cerrarSesion() {
     </div>
 
     <nav class="sidebar__nav">
-      <SidebarLink :to="{ name: 'cronograma' }" label="Cronograma">
+      <SidebarLink v-for="link in linksDelRol" :key="link.to" :to="{ name: link.to }" :label="link.label">
         <template #icon>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <path d="M16 2v4M8 2v4M3 10h18" />
-          </svg>
-        </template>
-      </SidebarLink>
-
-      <SidebarLink :to="{ name: 'historial' }" label="Historial">
-        <template #icon>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 3v5h5" />
-            <path d="M3.05 13A9 9 0 106 5.3L3 8" />
-            <path d="M12 7v5l4 2" />
-          </svg>
-        </template>
-      </SidebarLink>
-
-      <SidebarLink :to="{ name: 'clientes' }" label="Clientes">
-        <template #icon>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
-          </svg>
+          <span v-html="link.icon" />
         </template>
       </SidebarLink>
     </nav>
