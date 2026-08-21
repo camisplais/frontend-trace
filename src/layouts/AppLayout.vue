@@ -15,7 +15,8 @@ import AppSidebar from '@/components/layout/AppSidebar.vue'
 <style scoped>
 .app-shell {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .app-shell__content {
