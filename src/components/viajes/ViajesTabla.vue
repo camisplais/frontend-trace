@@ -2,9 +2,14 @@
 import type { Viaje, EmpleadoDetalle } from '@/types/viajes'
 import { useRouter } from 'vue-router'
 import { useGenerarCodigoQr } from '@/composables/useGenerarCodigoQr'
+import ModalPruebasIncompletas from '@/components/solicitudes/ModalPruebasIncompletas.vue'
 
 const router = useRouter()
-const { generarndoId, generarCodigo } = useGenerarCodigoQr()
+const {
+  generandoId, solicitandoId,
+  modalAbierto, viajeIdModal, embarquesPendientesModal,
+  iniciarGeneracion, solicitarQrAlCoordinador, cerrarModal,
+} = useGenerarCodigoQr()
 
 defineProps<{
   viajes: Viaje[]
@@ -54,7 +59,7 @@ function formatearHora(isoDatetime: string | null | undefined): string {
             </svg>
           </button>
           <button class="icono-btn" aria-label="Generar QR" :disabled="generandoId === v.id"
-            @click="generarCodigo(v.id)"
+            @click="iniciarGeneracion(v.id)"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="7" height="7" />
@@ -70,6 +75,14 @@ function formatearHora(isoDatetime: string | null | undefined): string {
       </tr>
     </tbody>
   </table>
+  <ModalPruebasIncompletas
+    :visible="modalAbierto"
+    :viaje-id="viajeIdModal"
+    :embarques-pendientes="embarquesPendientesModal"
+    :enviando="solicitandoId === viajeIdModal"
+    @confirmar="solicitarQrAlCoordinador"
+    @cancelar="cerrarModal"
+  />
 </template>
 
 <style scoped>
