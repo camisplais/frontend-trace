@@ -12,7 +12,10 @@ defineProps<{
   cargando?: boolean
 }>()
 
-const emit = defineEmits<{ 'editar-foto': [empleado: Empleado] }>()
+const emit = defineEmits<{
+  'crear-cuenta': [empleado: Empleado]
+  editar: [empleado: Empleado]
+}>()
 </script>
 
 <template>
@@ -51,13 +54,30 @@ const emit = defineEmits<{ 'editar-foto': [empleado: Empleado] }>()
             </svg>
             {{ e.cuenta.username }}
           </span>
-          <span v-else class="cuenta cuenta--sin">Sin cuenta registrada</span>
+          <!--
+            Sin cuenta: el icono de usuario con "+" es el disparador del alta,
+            para que se entienda que ahi se agrega el acceso al sistema.
+          -->
+          <button
+            v-else
+            type="button"
+            class="cuenta cuenta--sin"
+            :aria-label="`Crear cuenta para ${nombreCompleto(e)}`"
+            @click="emit('crear-cuenta', e)"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M19 8v6M22 11h-6" />
+            </svg>
+            Sin cuenta registrada
+          </button>
         </td>
         <td class="table__acciones">
           <button
             class="icono-btn"
-            aria-label="Editar foto"
-            @click="emit('editar-foto', e)"
+            aria-label="Editar empleado"
+            @click="emit('editar', e)"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 20h9" />
@@ -123,7 +143,24 @@ const emit = defineEmits<{ 'editar-foto': [empleado: Empleado] }>()
 }
 .cuenta svg { width: 16px; height: 16px; }
 .cuenta--activa { color: var(--color-text); }
-.cuenta--sin { color: var(--color-text-muted); }
+.cuenta--sin {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-align: left;
+}
+.cuenta--sin:hover { color: var(--color-primary-hover); text-decoration: underline; }
+.cuenta--sin svg {
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-soft);
+  flex-shrink: 0;
+}
 
 .icono-btn {
   background: var(--color-bg);
