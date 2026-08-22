@@ -1,5 +1,6 @@
 import { http } from '@/services/http'
 import type { ViajesRespuesta, ViajesFiltros, Viaje } from '@/types/viajes'
+import type { EmbarquePendiente } from '@/types/embarquePendiente'
 
 export const viajesService = {
   async listar(filtros: ViajesFiltros): Promise<ViajesRespuesta> {
@@ -22,5 +23,9 @@ export const viajesService = {
 
   async agregarEmbarque(viajeId: number, embarqueId: number): Promise<void> {
     await http.post(`/viajes/${viajeId}/embarques`, { body: { embarque_id: embarqueId } })
+  },
+
+  async embarquesPendientes(viajeId: number): Promise<EmbarquePendiente[]> {
+    return http.get<EmbarquePendiente[]>(`/viajes/${viajeId}/embarques-pendientes`)
   },
 }
