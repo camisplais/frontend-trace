@@ -1,14 +1,17 @@
 import { http } from '@/services/http'
 
+export interface EmpleadoSeguimiento {
+  estado: 'pendiente' | 'asignado'
+  nombre: string | null
+}
+
 export interface SeguimientoDetalle {
   hora_salida: string | null
   hora_entrada: string | null
+  empleado_caseta_entrada: EmpleadoSeguimiento
+  empleado_caseta_salida: EmpleadoSeguimiento
+  empleado_qr_salida: EmpleadoSeguimiento
   qr: string
-  // No tipamos los empleados de caseta a detalle: no los vamos a mostrar todavía
-  // en esta vista, y no vimos la forma exacta de formatearEmpleado().
-  empleado_caseta_entrada: unknown
-  empleado_caseta_salida: unknown
-  empleado_qr_salida: unknown
 }
 
 /**

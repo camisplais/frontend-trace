@@ -45,6 +45,7 @@ export interface SeguimientoResumen {
 
 export interface Viaje {
   id: number
+  createdAt: string
   empleado_chofer_id: number | null
   empleado_chofer: EmpleadoDetalle | null
   empleado_embarques_id: number | null
