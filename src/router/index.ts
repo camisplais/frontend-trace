@@ -66,6 +66,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Registrar Transporte', roles: [Role.COORD_STOCK] },
       },
       {
+        path: 'empleados',
+        name: 'empleados',
+        component: () => import('@/views/empleados/EmpleadosView.vue'),
+        meta: { title: 'Empleados', roles: [Role.COORD_STOCK] },
+      },
+      {
         path: 'horario',
         name: 'horario',
         component: () => import('@/views/horario/HorarioView.vue'),
