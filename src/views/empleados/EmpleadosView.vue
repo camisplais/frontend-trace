@@ -4,9 +4,12 @@ import BaseButton from '@/components/ui/BaseButton.vue'
 import BasePagination from '@/components/ui/BasePagination.vue'
 import EmpleadosTabla from '@/components/empleados/EmpleadosTabla.vue'
 import ImportarExcelModal from '@/components/empleados/ImportarExcelModal.vue'
-import SubirFotoModal from '@/components/empleados/SubirFotoModal.vue'
+import CrearCuentaModal from '@/components/empleados/CrearCuentaModal.vue'
+import EditarEmpleadoModal from '@/components/empleados/EditarEmpleadoModal.vue'
 import { useEmpleadosLista } from '@/composables/useEmpleadosLista'
 import { empleadosService } from '@/services/empleados.service'
+import { usuariosService } from '@/services/usuarios.service'
+import type { CrearCuentaPayload } from '@/services/usuarios.service'
 import { alerta } from '@/services/alerta'
 import { ApiError } from '@/services/http'
 import type { Empleado } from '@/types/empleado'
@@ -27,10 +30,22 @@ const {
 const mostrarImportar = ref(false)
 const importando = ref(false)
 
-const fotoEmpleado = ref<Empleado | null>(null)
-const subiendoFoto = ref(false)
+const cuentaEmpleado = ref<Empleado | null>(null)
+const creandoCuenta = ref(false)
+
+const editarEmpleado = ref<Empleado | null>(null)
+const guardandoEdicion = ref(false)
 
 onMounted(() => cargar(1))
+
+/** Traduce el error del backend al mismo formato de alerta que ya usa la vista. */
+async function mostrarError(titulo: string, e: unknown, fallback: string) {
+  if (e instanceof ApiError) {
+    await alerta.errorCodigo(titulo, e.message, e.code)
+  } else {
+    await alerta.error(titulo, fallback)
+  }
+}
 
 async function importarExcel(archivo: File) {
   importando.value = true
@@ -57,22 +72,55 @@ async function importarExcel(archivo: File) {
   }
 }
 
-async function subirFoto(archivo: File) {
-  if (!fotoEmpleado.value) return
-  subiendoFoto.value = true
+async function crearCuenta(payload: CrearCuentaPayload) {
+  if (!cuentaEmpleado.value) return
+  creandoCuenta.value = true
   try {
-    await empleadosService.subirFoto(fotoEmpleado.value.id, archivo)
-    fotoEmpleado.value = null
+    await usuariosService.crear(cuentaEmpleado.value.id, payload)
+    cuentaEmpleado.value = null
     await cargar(page.value)
-    await alerta.exito('Foto actualizada', 'La foto se guardó correctamente.')
+    await alerta.exito('¡Registro guardado!', 'La información se guardó correctamente.')
   } catch (e) {
-    if (e instanceof ApiError) {
-      await alerta.errorCodigo('No se pudo subir la foto', e.message, e.code)
-    } else {
-      await alerta.error('No se pudo subir la foto', 'Ocurrió un error inesperado.')
-    }
+    await mostrarError('No se pudo crear la cuenta', e, 'Ocurrió un error inesperado.')
   } finally {
-    subiendoFoto.value = false
+    creandoCuenta.value = false
+  }
+}
+
+/**
+ * Guarda la edicion del empleado. Son hasta tres endpoints distintos (foto,
+ * datos de cuenta y contrasena), asi que se mandan en secuencia y solo los
+ * que cambiaron. Si uno falla, se corta ahi y se avisa cual fue.
+ */
+async function guardarEdicion(cambios: {
+  archivo?: File
+  telefono?: string
+  password?: string
+}) {
+  const empleado = editarEmpleado.value
+  if (!empleado) return
+
+  guardandoEdicion.value = true
+  try {
+    if (cambios.archivo) {
+      await empleadosService.subirFoto(empleado.id, cambios.archivo)
+    }
+    if (cambios.telefono) {
+      await usuariosService.editar(empleado.id, { telefono: cambios.telefono })
+    }
+    if (cambios.password) {
+      await usuariosService.cambiarPassword(empleado.id, cambios.password)
+    }
+
+    editarEmpleado.value = null
+    await cargar(page.value)
+    await alerta.exito('¡Registro guardado!', 'La información se guardó correctamente.')
+  } catch (e) {
+    await mostrarError('No se pudo guardar la edición', e, 'Ocurrió un error inesperado.')
+    // Recarga de todos modos: puede que la foto si haya subido y el celular no.
+    await cargar(page.value)
+  } finally {
+    guardandoEdicion.value = false
   }
 }
 </script>
@@ -115,7 +163,8 @@ async function subirFoto(archivo: File) {
       <EmpleadosTabla
         :empleados="empleados"
         :cargando="cargando"
-        @editar-foto="fotoEmpleado = $event"
+        @crear-cuenta="cuentaEmpleado = $event"
+        @editar="editarEmpleado = $event"
       />
 
       <footer v-if="total > 0" class="table-footer">
@@ -131,12 +180,20 @@ async function subirFoto(archivo: File) {
       @close="mostrarImportar = false"
     />
 
-    <SubirFotoModal
-      v-if="fotoEmpleado"
-      :empleado="fotoEmpleado"
-      :subiendo="subiendoFoto"
-      @subir="subirFoto"
-      @close="fotoEmpleado = null"
+    <CrearCuentaModal
+      v-if="cuentaEmpleado"
+      :empleado="cuentaEmpleado"
+      :guardando="creandoCuenta"
+      @registrar="crearCuenta"
+      @close="cuentaEmpleado = null"
+    />
+
+    <EditarEmpleadoModal
+      v-if="editarEmpleado"
+      :empleado="editarEmpleado"
+      :guardando="guardandoEdicion"
+      @guardar="guardarEdicion"
+      @close="editarEmpleado = null"
     />
   </section>
 </template>
