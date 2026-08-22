@@ -2,25 +2,35 @@
 import BaseModal from '@/components/ui/BaseModal.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import { tipoEmbarqueLabel, type Embarque } from '@/types/embarque'
+import type { MovimientoSeguimiento } from '@/services/seguimiento.service'
 
 /**
  * Muestra el seguimiento (hora entrada / salida) de un embarque.
  *
  * El encabezado usa datos del embarque que ya tenemos. La lista de
- * entradas/salidas vendría de un endpoint de seguimiento por embarque que
- * aún no existe en el backend, por eso de momento se muestra vacía.
+ * movimientos la carga la vista desde GET /embarques/:id/seguimiento
+ * (un renglón por viaje al que pertenece el embarque).
  */
-interface Movimiento {
-  entrada: string | null
-  salida: string | null
-}
-
 defineProps<{
   embarque: Embarque
-  movimientos?: Movimiento[]
+  movimientos?: MovimientoSeguimiento[]
+  cargando?: boolean
 }>()
 
 const emit = defineEmits<{ close: [] }>()
+
+/** Formatea un datetime ISO a hora local; '—' si aún no hay registro. */
+function formatearHora(iso: string | null): string {
+  if (!iso) return '—'
+  const fecha = new Date(iso)
+  if (Number.isNaN(fecha.getTime())) return '—'
+  return fecha.toLocaleString('es-MX', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 </script>
 
 <template>
@@ -44,19 +54,24 @@ const emit = defineEmits<{ close: [] }>()
       <thead>
         <tr>
           <th>#</th>
-          <th>Hora Entrada</th>
           <th>Hora Salida</th>
+          <th>Hora Entrada</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(m, i) in movimientos ?? []" :key="i">
-          <td>{{ i + 1 }}</td>
-          <td>{{ m.entrada ?? '—' }}</td>
-          <td>{{ m.salida ?? '—' }}</td>
+        <tr v-if="cargando">
+          <td colspan="3" class="mov__empty">Cargando seguimiento…</td>
         </tr>
-        <tr v-if="!movimientos || movimientos.length === 0">
-          <td colspan="3" class="mov__empty">Sin registros de seguimiento aún.</td>
-        </tr>
+        <template v-else>
+          <tr v-for="(m, i) in movimientos ?? []" :key="m.viaje_id">
+            <td>{{ i + 1 }}</td>
+            <td>{{ formatearHora(m.salida) }}</td>
+            <td>{{ formatearHora(m.entrada) }}</td>
+          </tr>
+          <tr v-if="!movimientos || movimientos.length === 0">
+            <td colspan="3" class="mov__empty">Sin registros de seguimiento aún.</td>
+          </tr>
+        </template>
       </tbody>
     </table>
 
