@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { Viaje, EmpleadoDetalle } from '@/types/viajes'
 import { useRouter } from 'vue-router'
+import { useGenerarCodigoQr } from '@/composables/useGenerarCodigoQr'
 
 const router = useRouter()
+const { generarndoId, generarCodigo } = useGenerarCodigoQr()
 
 defineProps<{
   viajes: Viaje[]
@@ -51,7 +53,9 @@ function formatearHora(isoDatetime: string | null | undefined): string {
               <circle cx="12" cy="12" r="3" />
             </svg>
           </button>
-          <button class="icono-btn" aria-label="Generar QR">
+          <button class="icono-btn" aria-label="Generar QR" :disabled="generandoId === v.id"
+            @click="generarCodigo(v.id)"
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="7" height="7" />
               <rect x="14" y="3" width="7" height="7" />
@@ -97,4 +101,5 @@ function formatearHora(isoDatetime: string | null | undefined): string {
 }
 .icono-btn:hover { color: var(--color-primary); }
 .icono-btn svg { width: 16px; height: 16px; display: block; }
+.icono-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
