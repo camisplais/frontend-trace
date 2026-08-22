@@ -20,7 +20,7 @@ const routes: RouteRecordRaw[] = [
             case Role.EMBARQUES:
               return { name: 'horario' }
             case Role.ADUANAS:
-              return { name: 'horario' }
+              return { name: 'viajes-realizados' }
             case Role.COORD_STOCK:
               return { name: 'transportes' }
 
@@ -63,7 +63,7 @@ const routes: RouteRecordRaw[] = [
         path: 'viajes-realizados',
         name: 'viajes-realizados',
         component: () => import('@/views/viajesRealizados/ViajesRealizadosView.vue'),
-        meta: { title: 'Viajes Realizados', roles: [Role.COORD_STOCK] },
+        meta: { title: 'Viajes Realizados', roles: [Role.COORD_STOCK, Role.ADUANAS] },
       },
       {
         path: 'transportes/registrar',

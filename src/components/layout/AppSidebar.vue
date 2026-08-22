@@ -53,7 +53,7 @@ const navPorRol: Record<Role, NavLink[]> = {
     { to: 'pendientes', label: 'pendientes', icon: iconos.alerta },
   ],
   [Role.ADUANAS]: [
-    // TODO: agregar cuando existan las vistas de Aduanas
+    { to: 'viajes-realizados', label: 'Viajes Realizados', icon: iconos.viajes },
   ],
   [Role.COORD_STOCK]: [
     { to: 'viajes-realizados', label: 'Viajes Realizados', icon: iconos.viajes },

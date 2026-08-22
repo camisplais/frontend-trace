@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useViajesRealizados } from '@/composables/useViajesRealizados'
 import BasePagination from '@/components/ui/BasePagination.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
@@ -9,12 +9,17 @@ import { transportesService } from '@/services/transportes.service'
 import type { Transporte } from '@/types/transporte'
 import { http } from '@/services/http'
 import type { ChoferDisponible } from '@/types/crearViaje'
+import { useAuthStore } from '@/stores/auth'
+import { Role } from '@/types/roles'
 
 const {
   viajes, page, totalPages, filtros,
   detallesPorViaje, filaExpandida, cargandoDetalle,
   cargar, irAPagina, toggleAcordeon,
 } = useViajesRealizados()
+
+const auth = useAuthStore()
+const esAduanas = computed(() => auth.role === Role.ADUANAS)
 
 const transportes = ref<Transporte[]>([])
 const choferes = ref<ChoferDisponible[]>([])
@@ -123,6 +128,7 @@ function nombreCompleto(empleado: { nombre: string; apellido_paterno: string } |
                       <th>Tarimas</th>
                       <th>Pzas</th>
                       <th>Tipo</th>
+                      <th v-if="esAduanas">Recordatorio</th>
                       <th>Pruebas de entrega</th>
                     </tr>
                   </thead>
@@ -134,6 +140,9 @@ function nombreCompleto(empleado: { nombre: string; apellido_paterno: string } |
                       <td>{{ ve.embarque?.tarima }}</td>
                       <td>{{ ve.embarque?.cantidad_piezas }}</td>
                       <td>{{ ve.embarque?.tipo }}</td>
+                      <td v-if="esAduanas">
+                        <BaseButton>Enviar</BaseButton>
+                      </td>
                       <td>
                         <button v-if="ve.embarque_id" class="icono-btn" aria-label="Ver pruebas" @click="modalPruebasEmbarqueId = ve.embarque_id">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
