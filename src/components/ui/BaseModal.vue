@@ -46,6 +46,10 @@ const emit = defineEmits<{ close: [] }>()
   max-width: 440px;
 }
 
+.modal--lg {
+  max-width: 720px;
+}
+
 .modal__header {
   display: flex;
   align-items: center;

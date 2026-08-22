@@ -60,6 +60,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Transportes', roles: [Role.COORD_STOCK] },
       },
       {
+        path: 'viajes-realizados',
+        name: 'viajes-realizados',
+        component: () => import('@/views/viajesRealizados/ViajesRealizadosView.vue'),
+        meta: { title: 'Viajes Realizados', roles: [Role.COORD_STOCK] },
+      },
+      {
         path: 'transportes/registrar',
         name: 'transportes-registrar',
         component: () => import('@/views/transportes/RegistrarTransporteView.vue'),

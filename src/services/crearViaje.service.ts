@@ -14,7 +14,7 @@ export const crearViajeService = {
   },
 
   async choferesDisponibles(): Promise<{ data: ChoferDisponible[] }> {
-    return http.get('/empleados/choferes')
+    return http.get('/empleados/choferes', { query: { disponibles: true } })
   },
 
   async embarquesDeHoy(): Promise<{ data: Embarque[] }> {
