@@ -11,10 +11,34 @@ export interface SeguimientoDetalle {
   empleado_qr_salida: unknown
 }
 
+/**
+ * Un movimiento de seguimiento del embarque: corresponde a un viaje al que
+ * pertenece el embarque, con sus horas de entrada/salida (ISO) si ya se
+ * registraron. `entrada`/`salida` van en null mientras no haya paso por caseta.
+ */
+export interface MovimientoSeguimiento {
+  viaje_id: number
+  entrada: string | null
+  salida: string | null
+}
+
 export const seguimientoService = {
   async porViaje(viajeId: number): Promise<SeguimientoDetalle> {
     const res = await http.get<{ data: SeguimientoDetalle; msg: unknown }>(
       `/seguimiento-viaje/viaje/${viajeId}`,
+    )
+    return res.data
+  },
+
+  /**
+   * Seguimiento de un embarque (para el modal del Historial).
+   * El backend resuelve embarque -> viaje -> seguimiento y devuelve un
+   * movimiento por cada viaje al que pertenece el embarque.
+   * GET /embarques/:id/seguimiento
+   */
+  async porEmbarque(embarqueId: number): Promise<MovimientoSeguimiento[]> {
+    const res = await http.get<{ data: MovimientoSeguimiento[]; msg: unknown }>(
+      `/embarques/${embarqueId}/seguimiento`,
     )
     return res.data
   },

@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BasePagination from '@/components/ui/BasePagination.vue'
 import HistorialFiltros from '@/components/historial/HistorialFiltros.vue'
 import EmbarquesTabla from '@/components/historial/EmbarquesTabla.vue'
 import SeguimientoModal from '@/components/historial/SeguimientoModal.vue'
 import { useHistorial } from '@/composables/useHistorial'
+import { useSeguimientoEmbarque } from '@/composables/useSeguimientoEmbarque'
 import { exportarCsv } from '@/services/export'
-import { tipoEmbarqueLabel, type Embarque } from '@/types/embarque'
+import { tipoEmbarqueLabel } from '@/types/embarque'
 
 const {
   tipo,
@@ -23,7 +24,13 @@ const {
   aplicar,
 } = useHistorial()
 
-const seleccionado = ref<Embarque | null>(null)
+const {
+  seleccionado,
+  movimientos,
+  cargando: cargandoSeguimiento,
+  abrir: abrirSeguimiento,
+  cerrar: cerrarSeguimiento,
+} = useSeguimientoEmbarque()
 
 onMounted(() => cargar(1))
 
@@ -73,7 +80,7 @@ function exportar() {
         :embarques="filtrados"
         :indice-inicial="indiceInicial"
         :cargando="cargando"
-        @ver="seleccionado = $event"
+        @ver="abrirSeguimiento"
       />
 
       <footer v-if="meta" class="table-footer">
@@ -91,7 +98,9 @@ function exportar() {
     <SeguimientoModal
       v-if="seleccionado"
       :embarque="seleccionado"
-      @close="seleccionado = null"
+      :movimientos="movimientos"
+      :cargando="cargandoSeguimiento"
+      @close="cerrarSeguimiento"
     />
   </section>
 </template>
