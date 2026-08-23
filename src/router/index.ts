@@ -66,6 +66,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'Viajes Realizados', roles: [Role.COORD_STOCK, Role.ADUANAS] },
       },
       {
+        path: 'pruebas-entrega',
+        name: 'pruebas-entrega',
+        component: () => import('@/views/pruebasEntrega/PruebaEntregaView.vue'),
+        meta: { title: 'Pruebas Entrega', roles: [Role.ADUANAS] },
+      },
+      {
         path: 'transportes/registrar',
         name: 'transportes-registrar',
         component: () => import('@/views/transportes/RegistrarTransporteView.vue'),
