@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { roleLabel, Role } from '@/types/roles'
 import SidebarLink from './SidebarLink.vue'
+import logoTrace from '@/assets/trace.png'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -32,6 +33,7 @@ const iconos = {
   transportes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h15v13H1zM16 8h4l3 3v5h-7z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>',
   alerta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>',
   empleados: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>',
+  documento: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><path d="M14 2v6h6" /><path d="M8 13h8M8 17h8M8 9h2" /></svg>',
 }
 
 interface NavLink {
@@ -54,6 +56,7 @@ const navPorRol: Record<Role, NavLink[]> = {
   ],
   [Role.ADUANAS]: [
     { to: 'viajes-realizados', label: 'Viajes Realizados', icon: iconos.viajes },
+    { to: 'pruebas-entrega', label: 'Pruebas Entrega', icon: iconos.documento },
   ],
   [Role.COORD_STOCK]: [
     { to: 'viajes-realizados', label: 'Viajes Realizados', icon: iconos.viajes },
@@ -73,7 +76,7 @@ const linksDelRol = computed<NavLink[]>(() => {
 <template>
   <aside class="sidebar">
     <div class="sidebar__brand">
-      <span class="sidebar__logo">TRACE</span>
+      <img :src="logoTrace" alt="TRACE" class="sidebar__logo-img" />
     </div>
 
     <div v-if="auth.user" class="sidebar__user">
@@ -117,11 +120,10 @@ const linksDelRol = computed<NavLink[]>(() => {
   padding: 0 var(--space-5) var(--space-5);
 }
 
-.sidebar__logo {
-  color: var(--color-primary);
-  font-weight: var(--fw-bold);
-  font-size: var(--fs-xl);
-  letter-spacing: 0.05em;
+.sidebar__logo-img {
+  max-width: 160px;
+  height: auto;
+  display: block;
 }
 
 .sidebar__user {
@@ -159,6 +161,12 @@ const linksDelRol = computed<NavLink[]>(() => {
 .sidebar__user-role {
   color: var(--color-sidebar-text);
   font-size: var(--fs-xs);
+}
+
+.sidebar-link :deep(svg) {
+  width: 20px;
+  height: 20px;
+  flex: none;
 }
 
 .sidebar__nav {

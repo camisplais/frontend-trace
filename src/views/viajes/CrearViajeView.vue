@@ -3,6 +3,7 @@ import { onMounted, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCrearViaje } from '@/composables/useCreateViaje'
 import BaseButton from '@/components/ui/BaseButton.vue'
+import { alerta } from '@/services/alerta'
 
 const router = useRouter()
 const {
@@ -37,6 +38,22 @@ watch(embarqueId, (id) => {
 })
 
 async function onSubmit() {
+  if (!embarqueId.value || !transporteId.value || !choferId.value) {
+    alerta.error('Campos incompletos', 'Completa embarque, transporte y chofer.')
+    return
+  }
+
+  const haySubidos = Object.values(subidoPorDoc.value).some((v) => v)
+
+  if (!haySubidos) {
+    const continuar = await alerta.confirmar('Este embarque no tiene pruebas de entrega adjuntas', {
+      texto: '¿Deseas continuar de todas formas?',
+      confirmText: 'Sí, continuar',
+      cancelText: 'Cancelar',
+    })
+    if (!continuar) return
+  }
+
   const ok = await generarViaje()
   if (ok) router.push({ name: 'viajes' })
 }
