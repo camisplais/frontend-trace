@@ -13,6 +13,7 @@ function mapUsuarioApiToCurrentUser(data: UsuarioApi): CurrentUser | null {
 
   return {
     id: data.id,
+    empleadoId: data.empleado?.id ?? null,
     nombre: data.empleado ? `${data.empleado.nombre} ${data.empleado.apellido_paterno}` : data.username,
     role: data.rol.nombre as Role,
   }
