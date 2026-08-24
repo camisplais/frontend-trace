@@ -1,6 +1,8 @@
 import { http } from '@/services/http'
 import type { FiltroPruebas } from '@/types/pruebaEntrega'
 import type { DocumentosRespuesta } from '@/types/pruebaEntrega'
+import type { EmbarquePendienteGlobal } from '@/types/embarquePendienteGlobal'
+import type { DocsFaltantesEmbarque } from '@/types/documentoFaltante'
 
 export interface PruebaEntrega {
   id: number
@@ -36,5 +38,25 @@ export const pruebaEntregaService = {
   async obtenerUrl(id: number): Promise<string> {
     const res = await http.get<{ url: string }>(`/prueba-entrega-embarque/${id}/url`)
     return res.url
+  },
+
+  async embarquesPendientesGlobal(): Promise<EmbarquePendienteGlobal[]> {
+    return http.get('/prueba-entrega-embarque/pendientes')
+  },
+
+  async docsFaltantes(embarqueId: number): Promise<DocsFaltantesEmbarque> {
+    return http.get(`/prueba-entrega-embarque/embarque/${embarqueId}/faltantes`)
+  },
+  
+  async subirPruebaDesfasada(
+    viajeId: number,
+    embarqueId: number,
+    docClienteId: number,
+    file: File,
+  ): Promise<void> {
+    const form = new FormData()
+    form.append('docClienteId', String(docClienteId))
+    form.append('file', file)
+    return http.post(`/viajes/${viajeId}/embarques/${embarqueId}/pruebas-entrega`, { form })
   },
 }

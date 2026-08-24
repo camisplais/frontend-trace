@@ -116,7 +116,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'pendientes',
         name: 'pendientes',
-        component: () => import('@/views/horario/HorarioView.vue'), // temporal, solo para no romper el link
+        component: () => import('@/views/embarques/EmbarquesPendientesView.vue'), // temporal, solo para no romper el link
         meta: { title: 'Pendientes', roles: [Role.EMBARQUES] },
       },
 

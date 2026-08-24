@@ -43,6 +43,7 @@ export interface UsuarioApi {
 
 export interface CurrentUser {
   id: number
+  empleadoId: number | null
   nombre: string
   role: Role
 }
