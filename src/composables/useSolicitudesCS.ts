@@ -48,10 +48,16 @@ export function useSolicitudesCoordinador() {
 
   // La fecha se filtra en el cliente, sobre lo que ya se cargó
   const solicitudesFiltradas = computed(() => {
-    if (filtroDias.value === null) return solicitudes.value
+  let resultado = solicitudes.value.filter((s) => s.tipo !== 'pe_pendientes') 
+
+  if (filtroDias.value !== null) {
     const limite = Date.now() - filtroDias.value * 24 * 60 * 60 * 1000
-    return solicitudes.value.filter((s) => new Date(s.createdAt).getTime() >= limite)
-  })
+    resultado = resultado.filter((s) => new Date(s.createdAt).getTime() >= limite)
+  }
+
+  return resultado
+})
+
 
   async function aceptar(id: number) {
     procesandoId.value = id
