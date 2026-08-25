@@ -128,7 +128,6 @@ function nombreCompleto(empleado: { nombre: string; apellido_paterno: string } |
                       <th>Tarimas</th>
                       <th>Pzas</th>
                       <th>Tipo</th>
-                      <th v-if="esAduanas">Recordatorio</th>
                       <th>Pruebas de entrega</th>
                     </tr>
                   </thead>
@@ -140,9 +139,6 @@ function nombreCompleto(empleado: { nombre: string; apellido_paterno: string } |
                       <td>{{ ve.embarque?.tarima }}</td>
                       <td>{{ ve.embarque?.cantidad_piezas }}</td>
                       <td>{{ ve.embarque?.tipo }}</td>
-                      <td v-if="esAduanas">
-                        <BaseButton>Enviar</BaseButton>
-                      </td>
                       <td>
                         <button v-if="ve.embarque_id" class="icono-btn" aria-label="Ver pruebas" @click="modalPruebasEmbarqueId = ve.embarque_id">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
