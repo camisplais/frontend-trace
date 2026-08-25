@@ -64,6 +64,7 @@ const navPorRol: Record<Role, NavLink[]> = {
     { to: 'viajes-realizados', label: 'Viajes Realizados', icon: iconos.viajes },
     { to: 'transportes', label: 'Transportes', icon: iconos.transportes },
     { to: 'empleados', label: 'Empleados', icon: iconos.empleados },
+    { to: 'solicitudes', label: 'Solicitudes', icon: iconos.solicitar },
   ],
   [Role.CHOFER]: [],
   [Role.CASETA]: [],
