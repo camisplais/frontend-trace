@@ -56,10 +56,19 @@ export const useAuthStore = defineStore('auth', () => {
     return cargaEnProgreso
   }
 
-  function logout() {
+  async function logout() {
+  try {
+    await fetch(`${import.meta.env.VITE_API_NEGOCIO_URL}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+  } catch (e) {
+    console.error('Error al cerrar sesión', e)
+  } finally {
     user.value = null
     cargaEnProgreso = null
   }
+}
 
   return { user, isAuthenticated, role, cargando, cargarUsuario, logout }
 })
