@@ -8,6 +8,14 @@ export const solicitudesService = {
 
   async findAll(filtros: FiltrosSolicitudes): Promise<Solicitud[]> {
   return http.get('/solicitudes', { query: filtros })
-},
+  },
+  
+  async aceptar(id: number): Promise<Solicitud> {
+  return http.patch(`/solicitudes/${id}/aceptar`)
+  },
+
+  async rechazar(id: number): Promise<Solicitud> {
+  return http.patch(`/solicitudes/${id}/rechazar`)
+  },
 }
 
