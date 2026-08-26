@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { Role, type CurrentUser, type UsuarioApi } from '@/types/roles'
+import router from '@/router'
 
 /**
  * Convierte la respuesta cruda de /auth/me al shape que usan las vistas.
@@ -67,6 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
   } finally {
     user.value = null
     cargaEnProgreso = null
+    router.push('/login') 
   }
 }
 

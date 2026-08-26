@@ -19,9 +19,9 @@ const iniciales = computed(() => {
     .toUpperCase()
 })
 
-function cerrarSesion() {
-  auth.logout()
-  router.push('/')
+async function cerrarSesion() {
+  await auth.logout()      
+  router.push('/login')      
 }
 
 // Definición de íconos reutilizables (evita repetir el mismo <svg> varias veces)
